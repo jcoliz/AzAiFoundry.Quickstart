@@ -33,26 +33,5 @@ var results = await client.SendMessageAsync(thread, message);
 
 await foreach (PersistentThreadMessage threadMessage in results)
 {
-    Console.Write($"{threadMessage.CreatedAt:yyyy-MM-dd HH:mm:ss} - {threadMessage.Role,10}: ");
-    foreach (MessageContent contentItem in threadMessage.ContentItems)
-    {
-        if (contentItem is MessageTextContent textItem)
-        {
-            Console.Write(textItem.Text);
-        }
-        else if (contentItem is MessageImageFileContent imageFileItem)
-        {
-            Console.Write($"<image from ID: ./images/{imageFileItem.FileId}.png");
-
-            var result = await client.GetFileContentAsync(imageFileItem.FileId);
-            var stream = result.ToStream();
-            Directory.CreateDirectory("images");
-            File.Delete($"images/{imageFileItem.FileId}.png");
-            using (var fileStream = File.Create($"images/{imageFileItem.FileId}.png"))
-            {
-                await stream.CopyToAsync(fileStream);
-            }
-        }
-        Console.WriteLine();
-    }
+    await client.DisplayMessageAsync(threadMessage);
 }

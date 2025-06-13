@@ -81,9 +81,42 @@ public class ChatClient
             threadId: thread.Id, order: ListSortOrder.Ascending);
     }
 
-    public async Task<BinaryData> GetFileContentAsync(
+    private async Task<BinaryData> GetFileContentAsync(
         string fileId)
     {
         return await _projectClient.Files.GetFileContentAsync(fileId);
+    }
+
+    /// <summary>
+    ///  Displays a message from the thread in the console.
+    ///  This method formats the message content and handles different types of content,
+    /// </summary>
+    /// <param name="threadMessage"></param>
+    /// <returns></returns>
+    public async Task DisplayMessageAsync(
+        PersistentThreadMessage threadMessage)
+    {
+        Console.Write($"{threadMessage.CreatedAt:yyyy-MM-dd HH:mm:ss} - {threadMessage.Role,10}: ");
+        foreach (MessageContent contentItem in threadMessage.ContentItems)
+        {
+            if (contentItem is MessageTextContent textItem)
+            {
+                Console.Write(textItem.Text);
+            }
+            else if (contentItem is MessageImageFileContent imageFileItem)
+            {
+                Console.Write($"<image from ID: ./images/{imageFileItem.FileId}.png");
+
+                var result = await GetFileContentAsync(imageFileItem.FileId);
+                var stream = result.ToStream();
+                Directory.CreateDirectory("images");
+                File.Delete($"images/{imageFileItem.FileId}.png");
+                using (var fileStream = File.Create($"images/{imageFileItem.FileId}.png"))
+                {
+                    await stream.CopyToAsync(fileStream);
+                }
+            }
+            Console.WriteLine();
+        }
     }
 }
