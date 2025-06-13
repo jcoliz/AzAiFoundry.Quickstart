@@ -3,6 +3,7 @@ using Azure.Identity;
 using Azure.AI.Agents.Persistent;
 using Microsoft.Extensions.Configuration;
 using AzAiFoundry.Quickstart.Options;
+using Microsoft.Extensions.Azure;
 
 //
 // Load configuration
@@ -32,7 +33,7 @@ PersistentAgentThread thread = await projectClient.Threads.CreateThreadAsync();
 await projectClient.Messages.CreateMessageAsync(
     thread.Id,
     MessageRole.User,
-//    "begin analyzing the uploaded dataset");
+    args.Length > 0 ? args[0] :
     "Please describe your function.");
 
 ThreadRun run = await projectClient.Runs.CreateRunAsync(
@@ -40,12 +41,14 @@ ThreadRun run = await projectClient.Runs.CreateRunAsync(
     myagent.Value.Id
 );
 
+var startedAt = DateTime.UtcNow;
 do
 {
-    await Task.Delay(TimeSpan.FromMilliseconds(500));
+    await Task.Delay(TimeSpan.FromSeconds(1));
     run = await projectClient.Runs.GetRunAsync(thread.Id, run.Id);
 
-    Console.WriteLine("Run Status: {0}", run.Status);
+    var elapsed = DateTime.UtcNow - startedAt;
+    Console.WriteLine("{0} Run Status: {1}", elapsed, run.Status);
 }
 while (run.Status == RunStatus.Queued
     || run.Status == RunStatus.InProgress);
