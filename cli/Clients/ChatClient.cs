@@ -12,7 +12,9 @@ namespace AzAiFoundry.Quickstart.Options;
 /// </summary>
 public class ChatClient
 {
+    // Fields
     private readonly PersistentAgentsClient _projectClient;
+    private string AgentId { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ChatClient"/> class.
@@ -22,13 +24,6 @@ public class ChatClient
     {
         _projectClient = new PersistentAgentsClient(endpoint, new DefaultAzureCredential());
         AgentId = agentId;
-    }
-
-    private string AgentId { get; }
-
-    private async Task<PersistentAgent> GetAgentAsync()
-    {
-        return await _projectClient.Administration.GetAgentAsync(AgentId);
     }
 
     /// <summary>
@@ -81,12 +76,6 @@ public class ChatClient
             threadId: thread.Id, order: ListSortOrder.Ascending);
     }
 
-    private async Task<BinaryData> GetFileContentAsync(
-        string fileId)
-    {
-        return await _projectClient.Files.GetFileContentAsync(fileId);
-    }
-
     /// <summary>
     ///  Displays a message from the thread in the console.
     ///  This method formats the message content and handles different types of content,
@@ -118,5 +107,17 @@ public class ChatClient
             }
             Console.WriteLine();
         }
+    }
+
+    // Private methods
+    private async Task<PersistentAgent> GetAgentAsync()
+    {
+        return await _projectClient.Administration.GetAgentAsync(AgentId);
+    }
+
+    private async Task<BinaryData> GetFileContentAsync(
+        string fileId)
+    {
+        return await _projectClient.Files.GetFileContentAsync(fileId);
     }
 }
