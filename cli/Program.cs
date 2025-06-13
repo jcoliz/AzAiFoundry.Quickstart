@@ -1,2 +1,72 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+using Azure;
+using Azure.Identity;
+using Azure.AI.Agents.Persistent;
+using Microsoft.Extensions.Configuration;
+using AzAiFoundry.Quickstart.Options;
+
+//
+// Load configuration
+//
+
+var configuration = new ConfigurationBuilder()
+    .AddTomlFile("config.toml", optional: true)
+    .Build();
+
+var foundryOptions = new AiFoundryOptions();
+configuration.Bind(AiFoundryOptions.Section, foundryOptions);
+
+// https://learn.microsoft.com/en-us/dotnet/api/overview/azure/ai.agents.persistent-readme?view=azure-dotnet
+
+PersistentAgentsClient projectClient = new(foundryOptions.Endpoint, new DefaultAzureCredential());
+
+var agents = projectClient.Administration.GetAgentsAsync();
+await foreach (var each in agents)
+{
+    Console.WriteLine("Agent ID: {0}, Name: {1}", each.Id, each.Name);
+}
+
+var myagent = await projectClient.Administration.GetAgentAsync(foundryOptions.AgentId);
+
+PersistentAgentThread thread = await projectClient.Threads.CreateThreadAsync();
+
+await projectClient.Messages.CreateMessageAsync(
+    thread.Id,
+    MessageRole.User,
+//    "begin analyzing the uploaded dataset");
+    "Please describe your function.");
+
+ThreadRun run = await projectClient.Runs.CreateRunAsync(
+    thread.Id,
+    myagent.Value.Id
+);
+
+do
+{
+    await Task.Delay(TimeSpan.FromMilliseconds(500));
+    run = await projectClient.Runs.GetRunAsync(thread.Id, run.Id);
+
+    Console.WriteLine("Run Status: {0}", run.Status);
+}
+while (run.Status == RunStatus.Queued
+    || run.Status == RunStatus.InProgress);
+
+AsyncPageable<PersistentThreadMessage> messages
+    = projectClient.Messages.GetMessagesAsync(
+        threadId: thread.Id, order: ListSortOrder.Ascending);
+
+await foreach (PersistentThreadMessage threadMessage in messages)
+{
+    Console.Write($"{threadMessage.CreatedAt:yyyy-MM-dd HH:mm:ss} - {threadMessage.Role,10}: ");
+    foreach (MessageContent contentItem in threadMessage.ContentItems)
+    {
+        if (contentItem is MessageTextContent textItem)
+        {
+            Console.Write(textItem.Text);
+        }
+        else if (contentItem is MessageImageFileContent imageFileItem)
+        {
+            Console.Write($"<image from ID: {imageFileItem.FileId}");
+        }
+        Console.WriteLine();
+    }
+}
