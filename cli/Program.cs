@@ -68,7 +68,21 @@ await foreach (PersistentThreadMessage threadMessage in messages)
         }
         else if (contentItem is MessageImageFileContent imageFileItem)
         {
-            Console.Write($"<image from ID: {imageFileItem.FileId}");
+            Console.Write($"<image from ID: ./images/{imageFileItem.FileId}.png");
+
+            var result = await projectClient.Files.GetFileContentAsync(imageFileItem.FileId);
+            if (result.GetRawResponse().Status != 200)
+            {
+                Console.Write(" (error retrieving image)");
+                continue;
+            }
+            var stream = result.Value.ToStream();
+            Directory.CreateDirectory("images");
+            File.Delete($"images/{imageFileItem.FileId}.png");
+            using (var fileStream = File.Create($"images/{imageFileItem.FileId}.png"))
+            {
+                await stream.CopyToAsync(fileStream);
+            }
         }
         Console.WriteLine();
     }
