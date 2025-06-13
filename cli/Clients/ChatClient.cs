@@ -36,8 +36,7 @@ public class ChatClient
     }
 
     /// <summary>
-    /// Sends a message to the agent in a specific thread.
-    /// The message is sent as a user message, and the agent will respond based on its configuration.
+    /// Sends a message to the agent in a specific thread and waits for the agent's response.
     /// </summary>
     /// <param name="thread">Thread containing the chat to send into</param>
     /// <param name="content">Message to send to agent</param>
@@ -60,20 +59,29 @@ public class ChatClient
             agent.Id
         );
 
+        await WaitForRunCompletionAsync(thread.Id, run.Id);
+
+        return _projectClient.Messages.GetMessagesAsync(
+            threadId: thread.Id, order: ListSortOrder.Ascending);
+    }
+
+    /// <summary>
+    /// Waits for the agent run to complete, polling status and displaying progress.
+    /// </summary>
+    private async Task WaitForRunCompletionAsync(string threadId, string runId)
+    {
         var startedAt = DateTime.UtcNow;
+        ThreadRun run;
         do
         {
             await Task.Delay(TimeSpan.FromSeconds(1));
-            run = await _projectClient.Runs.GetRunAsync(thread.Id, run.Id);
+            run = await _projectClient.Runs.GetRunAsync(threadId, runId);
 
             var elapsed = DateTime.UtcNow - startedAt;
             Console.WriteLine("{0} Run Status: {1}", elapsed, run.Status);
         }
         while (run.Status == RunStatus.Queued
             || run.Status == RunStatus.InProgress);
-
-        return _projectClient.Messages.GetMessagesAsync(
-            threadId: thread.Id, order: ListSortOrder.Ascending);
     }
 
     /// <summary>
@@ -94,18 +102,25 @@ public class ChatClient
             }
             else if (contentItem is MessageImageFileContent imageFileItem)
             {
-                Console.Write($"<image from ID: ./images/{imageFileItem.FileId}.png");
-
-                var result = await GetFileContentAsync(imageFileItem.FileId);
-                var stream = result.ToStream();
-                Directory.CreateDirectory("images");
-                File.Delete($"images/{imageFileItem.FileId}.png");
-                using (var fileStream = File.Create($"images/{imageFileItem.FileId}.png"))
-                {
-                    await stream.CopyToAsync(fileStream);
-                }
+                await DisplayImageContentAsync(imageFileItem.FileId);
             }
             Console.WriteLine();
+        }
+    }
+
+    /// <summary>
+    /// Downloads and displays image file content.
+    /// </summary>
+    private async Task DisplayImageContentAsync(string fileId)
+    {
+        Console.Write($"<image from ID: ./images/{fileId}.png");
+        var result = await GetFileContentAsync(fileId);
+        var stream = result.ToStream();
+        Directory.CreateDirectory("images");
+        File.Delete($"images/{fileId}.png");
+        using (var fileStream = File.Create($"images/{fileId}.png"))
+        {
+            await stream.CopyToAsync(fileStream);
         }
     }
 
