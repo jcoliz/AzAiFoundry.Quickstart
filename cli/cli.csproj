@@ -9,10 +9,6 @@
 
   <ItemGroup>
     <PackageReference Include="Alexinea.Extensions.Configuration.Toml" Version="7.0.0" />
-    <PackageReference Include="Azure.AI.Agents.Persistent" Version="1.1.0-beta.2" />
-    <PackageReference Include="Azure.AI.Inference" Version="1.0.0-beta.5" />
-    <PackageReference Include="Azure.AI.Projects" Version="1.0.0-beta.9" />
-    <PackageReference Include="Azure.Core" Version="1.46.2" />
     <PackageReference Include="Azure.Identity" Version="1.14.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.6" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.6" />
@@ -20,6 +16,10 @@
 
   <ItemGroup>
     <None Update="config.toml" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\lib\jcoliz.AI.Agents.csproj" />
   </ItemGroup>
 
 </Project>
