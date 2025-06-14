@@ -1,7 +1,7 @@
-using Azure.AI.Agents.Persistent;
-using Microsoft.Extensions.Configuration;
-using AzAiFoundry.Quickstart.Clients;
 using AzAiFoundry.Quickstart.Options;
+using Azure.AI.Agents.Persistent;
+using jcoliz.AI.Agents;
+using Microsoft.Extensions.Configuration;
 
 //
 // Load configuration

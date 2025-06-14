@@ -2,7 +2,7 @@ using Azure;
 using Azure.Identity;
 using Azure.AI.Agents.Persistent;
 
-namespace AzAiFoundry.Quickstart.Clients;
+namespace jcoliz.AI.Agents;
 
 // https://learn.microsoft.com/en-us/dotnet/api/overview/azure/ai.agents.persistent-readme?view=azure-dotnet
 
