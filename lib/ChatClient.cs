@@ -1,6 +1,7 @@
 using Azure;
 using Azure.Identity;
 using Azure.AI.Agents.Persistent;
+using Azure.Core;
 
 namespace jcoliz.AI.Agents;
 
@@ -10,21 +11,11 @@ namespace jcoliz.AI.Agents;
 ///  Client for interacting with a Persistent Agent in Azure AI Foundry.
 ///  This client allows you to create threads, send messages, and retrieve file content
 /// </summary>
-public class ChatClient
+public class ChatClient(AiFoundryOptions options, TokenCredential credential)
 {
     // Fields
-    private readonly PersistentAgentsClient _projectClient;
-    private string AgentId { get; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ChatClient"/> class.
-    /// </summary>
-    /// <param name="endpoint">The endpoint of the Azure AI Foundry project.</param>
-    public ChatClient(string endpoint, string agentId)
-    {
-        _projectClient = new PersistentAgentsClient(endpoint, new DefaultAzureCredential());
-        AgentId = agentId;
-    }
+    private readonly PersistentAgentsClient _projectClient = new PersistentAgentsClient(options.Endpoint, credential);
+    private readonly string AgentId = options.AgentId;
 
     /// <summary>
     ///  Creates a new thread for the agent.

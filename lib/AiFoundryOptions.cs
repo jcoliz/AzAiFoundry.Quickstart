@@ -1,4 +1,4 @@
-namespace AzAiFoundry.Quickstart.Options;
+namespace jcoliz.AI.Agents;
 
 /// <summary>
 /// Options describing the identity of the app

@@ -1,5 +1,5 @@
-using AzAiFoundry.Quickstart.Options;
 using Azure.AI.Agents.Persistent;
+using Azure.Identity;
 using jcoliz.AI.Agents;
 using Microsoft.Extensions.Configuration;
 
@@ -18,7 +18,7 @@ configuration.Bind(AiFoundryOptions.Section, foundryOptions);
 // Create a client to interact with the Foundry project
 //
 
-var client = new ChatClient(foundryOptions.Endpoint, foundryOptions.AgentId);
+var client = new ChatClient(foundryOptions, new DefaultAzureCredential());
 
 //
 // Create a new thread and send a message to the agent
