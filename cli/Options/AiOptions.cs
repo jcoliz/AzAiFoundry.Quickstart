@@ -19,4 +19,10 @@ public class AiFoundryOptions
     /// Agent ID
     /// </summary>
     public string AgentId { get; init; } = string.Empty;
+
+    /// <summary>
+    ///  API Key for authentication
+    ///  If not provided, the client will use the DefaultAzureCredential to authenticate.
+    /// </summary>
+    public string? ApiKey { get; init; } = null;
 }
