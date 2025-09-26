@@ -21,6 +21,11 @@ public class AiFoundryOptions
     public string AgentId { get; init; } = string.Empty;
 
     /// <summary>
+    /// Model name to use when creating a new agent
+    /// </summary>
+    public string? ModelName { get; init; } = null;
+
+    /// <summary>
     ///  API Key for authentication
     ///  If not provided, the client will use the DefaultAzureCredential to authenticate.
     /// </summary>

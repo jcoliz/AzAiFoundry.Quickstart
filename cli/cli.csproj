@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Alexinea.Extensions.Configuration.Toml" Version="7.0.0" />
-    <PackageReference Include="Azure.Identity" Version="1.14.0" />
+    <PackageReference Include="Azure.Identity" Version="1.16.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.6" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.6" />
   </ItemGroup>
