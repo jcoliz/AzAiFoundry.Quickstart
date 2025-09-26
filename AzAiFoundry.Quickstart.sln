@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cli", "cli\cli.csproj", "{B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jcoliz.AI.Agents", "lib\jcoliz.AI.Agents.csproj", "{74967FFC-1DDB-4F4B-AEBC-AA2E9AACD2A6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mcp", "mcp\mcp.csproj", "{DA890A23-4377-4477-A76E-199C8D20DDA5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,18 @@ Global
 		{74967FFC-1DDB-4F4B-AEBC-AA2E9AACD2A6}.Release|x64.Build.0 = Release|Any CPU
 		{74967FFC-1DDB-4F4B-AEBC-AA2E9AACD2A6}.Release|x86.ActiveCfg = Release|Any CPU
 		{74967FFC-1DDB-4F4B-AEBC-AA2E9AACD2A6}.Release|x86.Build.0 = Release|Any CPU
+		{DA890A23-4377-4477-A76E-199C8D20DDA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA890A23-4377-4477-A76E-199C8D20DDA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA890A23-4377-4477-A76E-199C8D20DDA5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DA890A23-4377-4477-A76E-199C8D20DDA5}.Debug|x64.Build.0 = Debug|Any CPU
+		{DA890A23-4377-4477-A76E-199C8D20DDA5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DA890A23-4377-4477-A76E-199C8D20DDA5}.Debug|x86.Build.0 = Debug|Any CPU
+		{DA890A23-4377-4477-A76E-199C8D20DDA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA890A23-4377-4477-A76E-199C8D20DDA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA890A23-4377-4477-A76E-199C8D20DDA5}.Release|x64.ActiveCfg = Release|Any CPU
+		{DA890A23-4377-4477-A76E-199C8D20DDA5}.Release|x64.Build.0 = Release|Any CPU
+		{DA890A23-4377-4477-A76E-199C8D20DDA5}.Release|x86.ActiveCfg = Release|Any CPU
+		{DA890A23-4377-4477-A76E-199C8D20DDA5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
