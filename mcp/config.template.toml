@@ -1,0 +1,20 @@
+#
+# Application configuration template for AzAiFoundry.Quickstart.Mcp
+#
+# TODO: Set correct values in this file and save as config.toml
+#
+
+[ai_foundry]
+endpoint = "<YOUR_AZURE_AI_FOUNDRY_ENDPOINT>"
+
+[agent]
+name = "<YOUR_AGENT_NAME>"
+model = "gpt-4o"
+instructions = "@instructions.md"
+default_user_message = "<YOUR_DEFAULT_USER_MESSAGE>"
+
+[[agent.mcp_server]]
+label = "<YOUR_MCP_SERVER_LABEL>"
+endpoint = "<YOUR_MCP_SERVER_ENDPOINT>"
+tools = [ "<YOUR_MCP_SERVER_TOOL(S)>" ]
+scopes = [ "<YOUR_MCP_SERVER_SCOPE(S)" ]
