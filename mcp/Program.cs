@@ -3,7 +3,6 @@ using AzAiFoundry.Quickstart.Mcp;
 using Azure.AI.Agents.Persistent;
 using Azure.Core;
 using Azure.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Tomlyn;
 
@@ -20,7 +19,7 @@ try
     var credential = new DefaultAzureCredential();
 
     //
-    // Load configuration
+    // Load configuration from config.toml embedded resource
     //
 
     using var stream = fileprovider.GetFileInfo("config.toml").CreateReadStream();
@@ -47,7 +46,7 @@ try
     });
 
     //
-    // Create a client to interact with the Foundry project
+    // Create a client to interact with the AI Foundry project
     //
 
     var client = new PersistentAgentsClient(config.AiFoundry.Endpoint, credential);
@@ -57,7 +56,7 @@ try
     //
 
     var instructions = config.Agent.Instructions;
-    if (instructions.StartsWith("@"))
+    if (instructions.StartsWith('@'))
     {
         var instructionFile = instructions[1..];
         using var instructionStream = fileprovider.GetFileInfo(instructionFile).CreateReadStream();
@@ -83,6 +82,7 @@ try
     var scopes = config.Agent.McpServer.SelectMany(mcpServer => mcpServer.Scopes).Distinct().ToArray();
     var tokenRequestContext = new TokenRequestContext(scopes);
     AccessToken token = await credential.GetTokenAsync(tokenRequestContext);
+    Console.WriteLine($"OK. Acquired {token.TokenType} token for MCP server. Expires: {token.ExpiresOn}");
 
     //
     // Create a new thread and a message to the agent on that thread
