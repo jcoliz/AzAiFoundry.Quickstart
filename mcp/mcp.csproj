@@ -5,10 +5,12 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <UserSecretsId>1692e5fe-1d0a-4342-8464-b92a7c3b8c1f</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Alexinea.Extensions.Configuration.Toml" Version="7.0.0" />
+    <PackageReference Include="Azure.AI.Agents.Persistent" Version="1.2.0-beta.5" />
     <PackageReference Include="Azure.Identity" Version="1.16.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.6" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.6" />
@@ -17,12 +19,11 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\lib\jcoliz.AI.Agents.csproj" />
+    <None Update="config.toml" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="config.toml" />
-    <EmbeddedResource Include="instructions.md" />
+    <EmbeddedResource Include="Embed/*" />
   </ItemGroup>
 
 </Project>

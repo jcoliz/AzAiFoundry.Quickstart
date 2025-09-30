@@ -1,0 +1,19 @@
+#
+# Agent definition for AzAiFoundry.Quickstart.Mcp
+#
+
+[[agent.mcp_server]]
+label = "MicrosoftLearn"
+endpoint = "https://learn.microsoft.com/api/mcp"
+tools = [ "microsoft_docs_search", "microsoft_docs_fetch" ]
+# scopes = [ "<YOUR_MCP_SERVER_SCOPE(S)" ]
+
+[agent]
+name = "Learn Docs Test"
+model = "gpt-4o"
+default_user_message = "Describe Azure AI Foundry in 50 words or less"
+instructions = """
+Your role is to query the Microsoft Learn documentation using the `MicrosoftLearn`
+MCP server, and provide answers to the users questions. Be sure to include a link to the
+documentation website where user could learn more.
+"""

@@ -1,8 +1,10 @@
 ﻿using System.Reflection;
 using AzAiFoundry.Quickstart.Mcp;
+using AzAiFoundry.Quickstart.Mcp.Options;
 using Azure.AI.Agents.Persistent;
 using Azure.Core;
 using Azure.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Tomlyn;
 
@@ -22,19 +24,35 @@ try
     var credential = new DefaultAzureCredential();
 
     //
-    // Load configuration from config.toml embedded resource
+    // Load user-specific configuration from config.toml (optional)
+    //
+    // NOTE: Alternately, you can use 
+    // [Safe storage of app secrets in development in ASP.NET Core]
+    // (https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets)
     //
 
-    using var stream = fileprovider.GetFileInfo("config.toml").CreateReadStream();
+    var configuration = new ConfigurationBuilder()
+        .AddTomlFile("config.toml", optional: true)
+        .Build();
+
+    var foundryOptions = new AiFoundryOptions();
+    configuration.Bind(AiFoundryOptions.Section, foundryOptions);
+
+    //
+    // Load agent definition from agent.toml embedded resource
+    //
+
+    using var stream = fileprovider.GetFileInfo("Embed.agent.toml").CreateReadStream();
     using var reader = new StreamReader(stream);
     string toml = await reader.ReadToEndAsync();
-    var config = Toml.ToModel<AppConfiguration>(toml);
+    var definitionFile = Toml.ToModel<AgentDefinitionFile>(toml);
+    var agentDefinition = definitionFile.Agent;
 
     //
     // Create MCP tool definitions and configure allowed tools
     //
 
-    var tools = config.Agent.McpServer.Select(mcpServer =>
+    var tools = definitionFile.Agent.McpServer.Select(mcpServer =>
     {
         // Create MCP tool definitions
         MCPToolDefinition mcpTool = new(mcpServer.Label, mcpServer.Endpoint);
@@ -52,17 +70,17 @@ try
     // Create a client to interact with the AI Foundry project
     //
 
-    var client = new PersistentAgentsClient(config.AiFoundry.Endpoint, credential);
+    var client = new PersistentAgentsClient(foundryOptions.Endpoint, credential);
 
     //
     // Use provided instructions, or read the instructions from the named embedded resource
     //
 
-    var instructions = config.Agent.Instructions;
+    var instructions = agentDefinition.Instructions;
     if (instructions.StartsWith('@'))
     {
         var instructionFile = instructions[1..];
-        using var instructionStream = fileprovider.GetFileInfo(instructionFile).CreateReadStream();
+        using var instructionStream = fileprovider.GetFileInfo("Embed." + instructionFile).CreateReadStream();
         using var instructionReader = new StreamReader(instructionStream);
         instructions = await instructionReader.ReadToEndAsync();
     }
@@ -72,8 +90,8 @@ try
     //
 
     PersistentAgent agent = await client.Administration.CreateAgentAsync(
-        model: config.Agent.Model ?? "gpt-4o",
-        name: config.Agent.Name,
+        model: agentDefinition.Model ?? "gpt-4o",
+        name: agentDefinition.Name,
         instructions: instructions,
         tools: tools
     );
@@ -82,7 +100,7 @@ try
     // Get a token to access the MCP server, if scopes are specified
     //
 
-    var scopes = config.Agent.McpServer.SelectMany(mcpServer => mcpServer.Scopes).Distinct().ToArray();
+    var scopes = agentDefinition.McpServer.SelectMany(mcpServer => mcpServer.Scopes).Distinct().ToArray();
     string? token = null;
     if (scopes.Any())
     {
@@ -100,7 +118,7 @@ try
     await client.Messages.CreateMessageAsync(
         thread.Id,
         MessageRole.User,
-        args.FirstOrDefault() ?? config.Agent.DefaultUserMessage ?? throw new Exception("Must provide a user prompt")
+        args.FirstOrDefault() ?? agentDefinition.DefaultUserMessage ?? throw new Exception("Must provide a user prompt")
     );
 
     //
@@ -110,7 +128,7 @@ try
     // NOTE: This only works with a single MCP server. To use multiple MCP servers,
     // we would need a custom ToolResources implementation that includes
     // all MCP servers and their associated tokens.
-    MCPToolResource mcpToolResource = new(config.Agent.McpServer[0].Label);
+    MCPToolResource mcpToolResource = new(agentDefinition.McpServer[0].Label);
     if (!string.IsNullOrWhiteSpace(token))
     {
         mcpToolResource.UpdateHeader("Authorization", $"Bearer {token}");
@@ -136,7 +154,7 @@ try
     //
     // Display all messages in the thread
     //
-    
+
     var messages = client.Messages.GetMessagesAsync(
         threadId: thread.Id,
         order: ListSortOrder.Ascending
@@ -153,7 +171,6 @@ try
 
     await client.Threads.DeleteThreadAsync(threadId: thread.Id);
     await client.Administration.DeleteAgentAsync(agentId: agent.Id);
-
 }
 catch (Exception ex)
 {

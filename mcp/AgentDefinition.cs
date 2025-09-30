@@ -3,29 +3,15 @@ namespace AzAiFoundry.Quickstart.Mcp;
 /// <summary>
 /// Configuration controlling the behavior of the app
 /// </summary>
-public class AppConfiguration
+public class AgentDefinitionFile
 {
-    /// <summary>
-    /// Foundry project configuration
-    /// </summary>
-    public AiFoundryConfiguration AiFoundry { get; init; } = new();
-
     /// <summary>
     /// Agent configuration
     /// </summary>
-    public AgentConfiguration Agent { get; init; } = new();
+    public AgentDefinition Agent { get; init; } = new();
 }
 
-public class AiFoundryConfiguration
-{
-    /// <summary>
-    /// Foundry project configuration
-    /// </summary>
-    public string Endpoint { get; init; } = string.Empty;
-
-}
-
-public class AgentConfiguration
+public class AgentDefinition
 {
     /// <summary>
     /// Agent name
