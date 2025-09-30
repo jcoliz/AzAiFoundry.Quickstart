@@ -76,13 +76,18 @@ try
     );
 
     //
-    // Get a token to access the MCP server
+    // Get a token to access the MCP server, if scopes are specified
     //
 
     var scopes = config.Agent.McpServer.SelectMany(mcpServer => mcpServer.Scopes).Distinct().ToArray();
-    var tokenRequestContext = new TokenRequestContext(scopes);
-    AccessToken token = await credential.GetTokenAsync(tokenRequestContext);
-    Console.WriteLine($"OK. Acquired {token.TokenType} token for MCP server. Expires: {token.ExpiresOn}");
+    string? token = null;
+    if (scopes.Any())
+    {
+        var tokenRequestContext = new TokenRequestContext(scopes);
+        AccessToken accessToken = await credential.GetTokenAsync(tokenRequestContext);
+        Console.WriteLine($"OK. Acquired {accessToken.TokenType} token for MCP server. Expires: {accessToken.ExpiresOn}");
+        token = accessToken.Token;
+    }
 
     //
     // Create a new thread and a message to the agent on that thread
@@ -103,7 +108,10 @@ try
     // we would need a custom ToolResources implementation that includes
     // all MCP servers and their associated tokens.
     MCPToolResource mcpToolResource = new(config.Agent.McpServer[0].Label);
-    mcpToolResource.UpdateHeader("Authorization", $"Bearer {token.Token}");
+    if (!string.IsNullOrWhiteSpace(token))
+    {
+        mcpToolResource.UpdateHeader("Authorization", $"Bearer {token}");
+    }
     mcpToolResource.RequireApproval = new MCPApproval("never");
     ToolResources toolResources = mcpToolResource.ToToolResources();
 
