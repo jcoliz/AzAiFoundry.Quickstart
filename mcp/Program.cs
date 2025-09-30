@@ -10,6 +10,9 @@ using Tomlyn;
 // This program creates a new agent, supplies it with a prompt and MCP server
 // sends the agent a message, then waits for and displays the response.
 //
+// Supply a user prompt as the first command-line argument, or it will use the
+// default user prompt given in config
+//
 // See: https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/ai/Azure.AI.Agents.Persistent/samples/Sample32_PersistentAgents_MCP.md
 //
 
@@ -97,7 +100,7 @@ try
     await client.Messages.CreateMessageAsync(
         thread.Id,
         MessageRole.User,
-        config.Agent.DefaultUserMessage
+        args.FirstOrDefault() ?? config.Agent.DefaultUserMessage ?? throw new Exception("Must provide a user prompt")
     );
 
     //
