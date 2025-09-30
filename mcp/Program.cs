@@ -71,7 +71,7 @@ try
     // Create a new agent with the MCP tool
     //
 
-    var agent = await client.Administration.CreateAgentAsync(
+    PersistentAgent agent = await client.Administration.CreateAgentAsync(
         model: config.Agent.Model ?? "gpt-4o",
         name: config.Agent.Name,
         instructions: instructions,
@@ -136,6 +136,7 @@ try
     //
     // Display all messages in the thread
     //
+    
     var messages = client.Messages.GetMessagesAsync(
         threadId: thread.Id,
         order: ListSortOrder.Ascending
@@ -145,6 +146,14 @@ try
     {
         DisplayMessage(threadMessage);
     }
+
+    //
+    // Clean up thread and agent after use
+    //
+
+    await client.Threads.DeleteThreadAsync(threadId: thread.Id);
+    await client.Administration.DeleteAgentAsync(agentId: agent.Id);
+
 }
 catch (Exception ex)
 {
