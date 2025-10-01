@@ -1,0 +1,3 @@
+# If you want to keep certain agent configuration files out of source control
+# name them thusly:
+agent-*.toml
